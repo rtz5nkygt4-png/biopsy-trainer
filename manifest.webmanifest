@@ -1,7 +1,7 @@
 {
-  "name": "BioPsy MC-Trainer V2",
+  "name": "BioPsy MC-Trainer V2.1",
   "short_name": "BioPsy Trainer",
-  "description": "Biologische Psychologie Lerntrainer mit 5-stufigem Spaced Learning und Prüfungsmodus.",
+  "description": "Biologische Psychologie Lerntrainer mit 5-stufigem Spaced Learning, Offline-Modus und Prüfungsmodus.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

@@ -1,26 +1,17 @@
-BioPsy MC-Trainer V2 – 5× Spaced Learning
+BioPsy MC-Trainer V2.1
 
-NEUES LERNSYSTEM
-- 5 sichere Abrufe statt 3.
-- Nach jeder sicheren Antwort wird die Frage zunächst nach anderen Fragen zurückgestellt:
-  Stufe 1 -> ca. 5 andere Antworten
-  Stufe 2 -> ca. 10
-  Stufe 3 -> ca. 20
-  Stufe 4 -> ca. 40
-  Stufe 5 -> sicher gelernt
-- Ein Fehler setzt die Serie auf 0/5 zurück.
-- „Unsicher / geraten“: eine richtige Antwort zählt NICHT hoch.
-- Sichere 5/5-Fragen bekommen spätere Kontrollwiederholungen (1, 3, 7, 14, 30 Tage).
-- MC-Antwortpositionen werden bei jeder neuen Darbietung neu gemischt.
-- Offene Fragen: Nicht gewusst / Teilweise / Sicher gewusst.
-- Dashboard zeigt Stufen 0–5 und eine Lernstands-/Prüfungsreife-Anzeige.
-- 64-Fragen-Prüfungsmodus bleibt getrennt.
+UPDATE:
+- Installationsbutton verschwindet automatisch, wenn die App bereits als PWA/Home-Screen-App läuft.
+- Mobile Kopfzeile und Statistikbereich kompakter.
+- Cache-Version erhöht, damit Updates über GitHub Pages zuverlässiger erkannt werden.
+- Lernsystem weiterhin: 5 sichere Abrufe, Fehler -> 0/5, Unsicher/geraten -> kein Hochstufen.
 
-IPHONE/IPAD
-Für Installation als PWA alle Dateien dieses ZIP über HTTPS hosten (z.B. GitHub Pages).
-Danach in Safari: Teilen -> Zum Home-Bildschirm -> Hinzufügen.
+GITHUB-UPDATE:
+Ersetze im bestehenden Repository diese Dateien:
+- index.html
+- manifest.webmanifest
+- service-worker.js
 
-FORTSCHRITT
-Der Trainer migriert vorhandenen V1-Fortschritt automatisch im selben Browser.
-Ein altes 3/3 gilt in V2 NICHT sofort als 5/5, sondern behält nur die bereits erreichte Stufe.
-Export/Import unter „Fragenbank“ ermöglicht Gerätewechsel.
+Die beiden Icons können unverändert bleiben.
+Danach GitHub Pages kurz neu deployen lassen bzw. 1-3 Minuten warten.
+Auf iPhone/iPad die Web-App komplett schließen und neu öffnen.
