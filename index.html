@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BioPsy MC-Trainer V2.6</title>
+<title>BioPsy MC-Trainer V2.7</title>
 <meta name="theme-color" content="#3157d5">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -539,8 +539,13 @@ function renderLearn(){
   }
   const s=pstate(current.id);
   let inner=`<div class="topline"><span class="badge">${escapeHtml(current.chapter)}</span><span>${current.type==="mc"?"Multiple Choice":"Offene Frage"}</span></div>
-    <div class="question">${escapeHtml(current.q)}</div>
-    <div class="question-meta">
+    <div class="question">${escapeHtml(current.q)}</div>`;
+
+  if(current.type==="mc"){
+    inner+=`<div class="unsure-wrap"><button id="unsureBtn" class="unsure">🤔 Unsicher / geraten</button></div>
+    <div class="options">${currentOrder.map((origIdx,displayIdx)=>`<button class="option" data-display="${displayIdx}" data-orig="${origIdx}"><span class="letter">${String.fromCharCode(65+displayIdx)}</span><span>${escapeHtml(current.options[origIdx])}</span></button>`).join("")}</div>
+    <div id="feedback" class="feedback"></div>
+    <div class="question-meta" style="margin-top:16px">
       <span class="meta-chip">📚 ${escapeHtml(current.chapter||"Ohne Kapitel")}</span>
       <span class="meta-chip">📖 Buch: ${escapeHtml(current.book_chapter||"noch nicht zugeordnet")}</span>
       <span class="meta-chip">🎓 VL: ${escapeHtml(current.lecture||"noch nicht zugeordnet")}${current.slides?` · Folie ${escapeHtml(current.slides)}`:""}</span>
@@ -548,11 +553,6 @@ function renderLearn(){
     </div>
     ${questionNotice(current)?`<div class="question-notice"><b>⚠ Hinweis:</b> ${escapeHtml(questionNotice(current))}</div>`:""}
     <div class="question-tools"><button id="flagQuestionBtn" class="flag-btn ${reviewQueue[current.id]?.status==="open"?"marked":""}">${reviewQueue[current.id]?.status==="open"?"⚑ Markiert":"⚑ Zur Bearbeitung"}</button></div>`;
-
-  if(current.type==="mc"){
-    inner+=`<div class="unsure-wrap"><button id="unsureBtn" class="unsure">🤔 Unsicher / geraten</button></div>
-    <div class="options">${currentOrder.map((origIdx,displayIdx)=>`<button class="option" data-display="${displayIdx}" data-orig="${origIdx}"><span class="letter">${String.fromCharCode(65+displayIdx)}</span><span>${escapeHtml(current.options[origIdx])}</span></button>`).join("")}</div>
-    <div id="feedback" class="feedback"></div>`;
   }else{
     inner+=`<label>Deine Antwort</label><textarea class="open-answer" id="openText" placeholder="Formuliere deine Antwort hier..."></textarea>
     <button id="revealBtn" class="primary" style="margin-top:10px">Musterpunkte anzeigen</button>
@@ -561,7 +561,15 @@ function renderLearn(){
       <button id="openWrong">❌ Nicht gewusst</button>
       <button id="openPartial">🟡 Teilweise</button>
       <button id="openRight" class="primary">✅ Sicher gewusst</button>
-    </div>`;
+    </div>
+    <div class="question-meta" style="margin-top:16px">
+      <span class="meta-chip">📚 ${escapeHtml(current.chapter||"Ohne Kapitel")}</span>
+      <span class="meta-chip">📖 Buch: ${escapeHtml(current.book_chapter||"noch nicht zugeordnet")}</span>
+      <span class="meta-chip">🎓 VL: ${escapeHtml(current.lecture||"noch nicht zugeordnet")}${current.slides?` · Folie ${escapeHtml(current.slides)}`:""}</span>
+      ${questionNotice(current)?`<span class="meta-chip warning">⚠ Hinweis vorhanden</span>`:""}
+    </div>
+    ${questionNotice(current)?`<div class="question-notice"><b>⚠ Hinweis:</b> ${escapeHtml(questionNotice(current))}</div>`:""}
+    <div class="question-tools"><button id="flagQuestionBtn" class="flag-btn ${reviewQueue[current.id]?.status==="open"?"marked":""}">${reviewQueue[current.id]?.status==="open"?"⚑ Markiert":"⚑ Zur Bearbeitung"}</button></div>`;
   }
 
   inner+=`<div class="nextrow"><div class="streak">Lernstufe: <b>${stageName(s)}</b>${stagePips(s.streak)}${s.mastered?`<div class="reviewnote">${isReviewDue(s)?"Kontrollwiederholung ist fällig.":"Sicher gelernt; spätere Kontrolle ist geplant."}</div>`:""}</div><button id="skipBtn">Überspringen</button></div>`;
@@ -581,7 +589,7 @@ function renderLearn(){
     document.getElementById("openPartial").onclick=()=>grade("partial");
     document.getElementById("openRight").onclick=()=>grade("right");
   }
-  document.getElementById("flagQuestionBtn").onclick=()=>openFlagModal(current.id);
+  const flagBtn=document.getElementById("flagQuestionBtn"); if(flagBtn) flagBtn.onclick=()=>openFlagModal(current.id);
   document.getElementById("skipBtn").onclick=nextLearn;
 }
 function answerMC(displayIdx){

@@ -1,7 +1,7 @@
 {
-  "name": "BioPsy MC-Trainer V2.6",
+  "name": "BioPsy MC-Trainer V2.7",
   "short_name": "BioPsy Trainer",
-  "description": "Biologische Psychologie Lerntrainer mit Hinweisen pro Frage, Bearbeitungsliste und interner Fragenerstellung.",
+  "description": "Biologische Psychologie Lerntrainer: Antworten zuerst, Info- und Bearbeitungsbereich darunter.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
