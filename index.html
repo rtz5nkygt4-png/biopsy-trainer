@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BioPsy MC-Trainer V2.1</title>
+<title>BioPsy MC-Trainer V2.6</title>
 <meta name="theme-color" content="#3157d5">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -98,6 +98,49 @@ body.pwa-installed #installBtn{display:none!important}
   .content{padding:16px}
 }
 
+
+.hintbox{margin-top:10px;padding:12px 14px;border-radius:12px;background:var(--warnbg);border:1px solid #efcf98}
+.hintbox b{display:block;margin-bottom:4px;color:#7c4d00}
+
+
+/* V2.4 review/edit workflow */
+.question-meta{display:flex;flex-wrap:wrap;gap:7px;margin:-10px 0 18px}
+.meta-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border-radius:999px;background:#f2f4f8;color:#596575;font-size:11px;font-weight:700;border:1px solid var(--line)}
+.question-tools{display:flex;justify-content:flex-end;margin:-4px 0 12px}
+.flag-btn{font-size:12px;padding:8px 10px}
+.flag-btn.marked{background:var(--warnbg);border-color:#efcf98;color:#7c4d00}
+.review-list{display:grid;gap:10px}
+.review-card{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}
+.review-card h3{font-size:15px;line-height:1.4;margin:0 0 7px}
+.review-card .note{padding:9px 11px;border-radius:10px;background:var(--warnbg);margin:8px 0;font-size:13px}
+.review-card .meta{font-size:11px;color:var(--muted);line-height:1.5}
+.review-card .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.editor-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.editor-grid .full{grid-column:1/-1}
+.editor-options{display:grid;gap:8px}
+.editor-option{display:grid;grid-template-columns:42px 1fr;gap:8px;align-items:center}
+.editor-option input[type="radio"]{width:auto}
+.editor-section{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
+.status-pill{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800;background:#eef1f6}
+.status-pill.done{background:var(--goodbg);color:var(--good)}
+@media(max-width:700px){
+  .editor-grid{grid-template-columns:1fr}
+  .editor-grid .full{grid-column:auto}
+}
+
+
+/* V2.5 new-question workflow */
+.newq-type-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.newq-type-row button.active{background:var(--accent2);border-color:#b8c6ff;color:#2447ba}
+.newq-option{display:grid;grid-template-columns:42px 1fr;gap:8px;align-items:center;margin-bottom:8px}
+.newq-option input[type="radio"]{width:auto}
+
+
+/* V2.6 question notices */
+.meta-chip.warning{background:#fff8df;border-color:#f0cf6a;color:#7a5a00}
+.question-notice{margin:-8px 0 16px;padding:10px 12px;border-radius:12px;background:#fff8df;border:1px solid #f0cf6a;color:#6d5200;font-size:12px;line-height:1.45}
+.question-notice b{font-weight:800}
+
 </style>
 </head>
 <body>
@@ -105,10 +148,12 @@ body.pwa-installed #installBtn{display:none!important}
 <header>
   <div class="brand">
     <h1>BioPsy MC-Trainer</h1>
-    <p>5× mit Abstand richtig = sicher gelernt · Fortschritt wird lokal gespeichert</p>
+    <p>3× mit Abstand richtig = sicher gelernt · Fortschritt wird lokal gespeichert</p>
   </div>
   <div class="header-actions">
     <button id="installBtn" title="Als App installieren">App installieren</button>
+    <button id="newQuestionBtn">＋ Neue Frage</button>
+    <button id="reviewListBtn">⚑ Bearbeitungsliste</button>
     <button id="manageBtn">Fragenbank</button>
     <button id="resetBtn" class="danger">Fortschritt zurücksetzen</button>
   </div>
@@ -119,7 +164,7 @@ body.pwa-installed #installBtn{display:none!important}
   <div class="progress"><div id="progressBar"></div></div>
   <div class="statgrid">
     <div class="stat"><b id="readinessCount">0%</b><span>Prüfungsreife*</span></div>
-    <div class="stat"><b id="masteredCount">0</b><span>sicher (5/5)</span></div>
+    <div class="stat"><b id="masteredCount">0</b><span>sicher (3/3)</span></div>
     <div class="stat"><b id="remainingCount">0</b><span>offen</span></div>
     <div class="stat"><b id="wrongCount">0</b><span>Fehler gesamt</span></div>
     <div class="stat"><b id="percentCount">0%</b><span>Fortschritt</span></div>
@@ -168,7 +213,7 @@ body.pwa-installed #installBtn{display:none!important}
     <div style="display:flex;justify-content:space-between;gap:10px;align-items:center">
       <h2>Fragenbank verwalten</h2><button id="closeModal">Schließen</button>
     </div>
-    <p class="small">Du kannst später weitere Fragen als JSON importieren. Der Trainer nutzt 5 Lernstufen. Richtige Antworten erhöhen die Stufe nur bei sicherem Abruf; „unsicher/geraten“ zählt nicht hoch. Fehler setzen die Serie auf 0. Importierte Fragen werden im Browser gespeichert.</p>
+    <p class="small">Du kannst später weitere Fragen als JSON importieren. Der Trainer nutzt 3 Lernstufen. Richtige Antworten erhöhen die Stufe nur bei sicherem Abruf; „unsicher/geraten“ zählt nicht hoch. Fehler setzen die Serie auf 0. Importierte Fragen werden im Browser gespeichert.</p>
     <div class="row">
       <button id="exportBank">Fragenbank exportieren</button>
       <button id="exportProgress">Fortschritt exportieren</button>
@@ -182,6 +227,89 @@ body.pwa-installed #installBtn{display:none!important}
     <label>Fragenbank als JSON importieren</label>
     <input id="fileImport" type="file" accept=".json,application/json">
     <p class="small">MC-Schema: <code>{"id":"x1","chapter":"3 – ...","type":"mc","q":"...","options":["A","B","C","D"],"answer":2,"explanation":"..."}</code><br>Offen: <code>{"id":"x2","chapter":"...","type":"open","q":"...","answer_text":"..."}</code></p>
+  </div>
+</div>
+
+
+<div class="modalback" id="flagModal">
+  <div class="modal" style="max-width:560px">
+    <div style="display:flex;justify-content:space-between;gap:10px;align-items:center">
+      <h2>Zur Bearbeitung markieren</h2><button id="closeFlagModal">Schließen</button>
+    </div>
+    <p class="small">Schreib kurz auf, was dir aufgefallen ist. Du kannst die Frage später in Ruhe in der Bearbeitungsliste ändern.</p>
+    <label>Notiz</label>
+    <textarea id="flagNote" style="min-height:110px" placeholder="z. B. Lösung mit Buch prüfen, Antwort C komisch formuliert, Folie 27 nachschauen ..."></textarea>
+    <label style="display:flex;gap:8px;align-items:center;color:var(--ink);font-size:13px">
+      <input id="flagHide" type="checkbox" style="width:auto"> Bis zur Bearbeitung beim Lernen ausblenden
+    </label>
+    <div class="row" style="margin-top:14px">
+      <button id="cancelFlag">Abbrechen</button>
+      <button id="saveFlag" class="primary">Markieren</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="modalback" id="newQuestionModal">
+  <div class="modal" style="width:min(760px,100%)">
+    <div style="display:flex;justify-content:space-between;gap:10px;align-items:center">
+      <h2>Neue Frage erstellen</h2><button id="closeNewQuestionModal">Schließen</button>
+    </div>
+    <p class="small">Die Frage wird direkt in deiner lokalen Fragenbank gespeichert und steht danach sofort im Lerntrainer zur Verfügung.</p>
+
+    <div class="newq-type-row">
+      <button id="newTypeMC" class="active">Multiple Choice</button>
+      <button id="newTypeRF">Richtig / Falsch</button>
+    </div>
+
+    <label>Frage</label>
+    <textarea id="newQText" style="min-height:110px" placeholder="Frage eingeben ..."></textarea>
+
+    <div id="newQOptionsMC">
+      <label>Antwortoptionen · richtige Antwort auswählen</label>
+      <div class="newq-option"><label style="margin:0;color:var(--ink)"><input type="radio" name="newCorrect" value="0" checked> A</label><input id="newOpt0" type="text" placeholder="Antwort A"></div>
+      <div class="newq-option"><label style="margin:0;color:var(--ink)"><input type="radio" name="newCorrect" value="1"> B</label><input id="newOpt1" type="text" placeholder="Antwort B"></div>
+      <div class="newq-option"><label style="margin:0;color:var(--ink)"><input type="radio" name="newCorrect" value="2"> C</label><input id="newOpt2" type="text" placeholder="Antwort C"></div>
+      <div class="newq-option"><label style="margin:0;color:var(--ink)"><input type="radio" name="newCorrect" value="3"> D</label><input id="newOpt3" type="text" placeholder="Antwort D"></div>
+    </div>
+
+    <div id="newQOptionsRF" style="display:none">
+      <label>Richtige Antwort</label>
+      <div class="row">
+        <label style="margin:0;color:var(--ink)"><input type="radio" name="newRF" value="0" checked> Richtig</label>
+        <label style="margin:0;color:var(--ink)"><input type="radio" name="newRF" value="1"> Falsch</label>
+      </div>
+    </div>
+
+    <label>Erklärung / Hinweis zur Lösung</label>
+    <textarea id="newQExplanation" style="min-height:80px" placeholder="Optional: kurze Erklärung oder Hinweis"></textarea>
+
+    <div class="editor-section">
+      <h3>Orientierung</h3>
+      <div class="editor-grid">
+        <div class="full"><label>Trainer-Kapitel</label><input id="newQChapter" type="text" placeholder="z. B. Kapitel 3 – Neurophysiologie"></div>
+        <div><label>Buchkapitel</label><input id="newQBook" type="text" placeholder="z. B. Kapitel 5"></div>
+        <div><label>Vorlesung</label><input id="newQLecture" type="text" placeholder="z. B. VL 7 – Neurophysiologie"></div>
+        <div><label>Folie(n)</label><input id="newQSlides" type="text" placeholder="z. B. 23–28"></div>
+        <div><label>Quellen-Notiz</label><input id="newQSource" type="text" placeholder="z. B. Buch S. 143"></div>
+        <div class="full"><label>⚠ Hinweis zur Frage</label><textarea id="newQNotice" style="min-height:75px" placeholder="Optionaler Hinweis, z. B. rekonstruiert oder nicht wörtlich im Buch belegt"></textarea></div>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:18px">
+      <button id="cancelNewQuestion">Abbrechen</button>
+      <button id="saveNewQuestion" class="primary">Frage speichern</button>
+    </div>
+  </div>
+</div>
+
+<div class="modalback" id="reviewModal">
+  <div class="modal" style="width:min(900px,100%)">
+    <div style="display:flex;justify-content:space-between;gap:10px;align-items:center">
+      <h2>Bearbeitungsliste</h2><button id="closeReviewModal">Schließen</button>
+    </div>
+    <div id="reviewListView"></div>
+    <div id="reviewEditorView" style="display:none"></div>
   </div>
 </div>
 
@@ -204,8 +332,9 @@ const STORAGE_KEY = "biopsy_trainer_progress_v2";
 const META_KEY = "biopsy_trainer_meta_v2";
 const OLD_STORAGE_KEY = "biopsy_trainer_progress_v1";
 const BANK_KEY = "biopsy_trainer_bank_v1";
-const MAX_STREAK = 5;
-const COOLDOWNS = [0, 5, 10, 20, 40, 80]; // Anzahl anderer Antworten vor der nächsten bevorzugten Wiederholung
+const REVIEW_KEY = "biopsy_trainer_review_queue_v1";
+const MAX_STREAK = 3;
+const COOLDOWNS = [0, 5, 12, 25]; // Anzahl anderer Antworten vor der nächsten bevorzugten Wiederholung
 const REVIEW_DAYS = [1, 3, 7, 14, 30];
 
 let bank = loadBank();
@@ -217,6 +346,10 @@ let currentOrder = [];
 let answered = false;
 let uncertainAnswer = false;
 let exam = null;
+let reviewQueue = loadReviewQueue();
+let flagTargetId = null;
+let editingReviewId = null;
+let newQuestionType = "mc";
 
 function loadBank(){
   try { const x=JSON.parse(localStorage.getItem(BANK_KEY)); if(Array.isArray(x)&&x.length) return x; } catch(e){}
@@ -225,11 +358,56 @@ function loadBank(){
 function normalizeState(s){
   const x = Object.assign({streak:0,mastered:false,wrong:0,attempts:0,lastWrong:false,cooldownUntil:0,reviewLevel:0,reviewDue:0,lastSeen:0}, s||{});
   x.streak = Math.max(0, Math.min(MAX_STREAK, Number(x.streak)||0));
-  // Migration from old 3/3: keep the earned level, but require 5/5 in V2.
+  // Migration from old 3/3: keep the earned level, but require 3/3 in V2.
   if(x.mastered && x.streak < MAX_STREAK) x.mastered = false;
   x.mastered = x.streak >= MAX_STREAK;
   return x;
 }
+
+function loadReviewQueue(){
+  try{
+    const x=JSON.parse(localStorage.getItem(REVIEW_KEY));
+    return x && typeof x==="object" ? x : {};
+  }catch(e){return {}}
+}
+function saveReviewQueue(){
+  localStorage.setItem(REVIEW_KEY,JSON.stringify(reviewQueue));
+  updateReviewBadge();
+}
+function saveBank(){
+  localStorage.setItem(BANK_KEY,JSON.stringify(bank));
+}
+function bankQuestion(id){ return bank.find(q=>q.id===id) || null; }
+function questionMeta(q){
+  return {
+    book:q.book_chapter || "",
+    lecture:q.lecture || "",
+    slides:q.slides || "",
+    sourceNote:q.source_note || ""
+  };
+}
+function questionNotice(q){
+  const explicit = q.notice || q.warning || q.hint_note || q.question_note || q.source_warning || "";
+  if(explicit) return explicit;
+  if(q.source_tag==="R") return "Aus einem Fragment bzw. mit fehlenden Optionen rekonstruiert.";
+  if(q.source_tag==="B") return "Modellgestützt bereinigt bzw. fachlich vervollständigt.";
+  return "";
+}
+function isHiddenForReview(id){
+  const r=reviewQueue[id];
+  return !!(r && r.status==="open" && r.hideUntilEdited);
+}
+function formatMarkedAt(ts){
+  if(!ts) return "";
+  try{return new Date(ts).toLocaleString("de-DE",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}catch(e){return ""}
+}
+function updateReviewBadge(){
+  const btn=document.getElementById("reviewListBtn");
+  if(!btn)return;
+  const n=Object.values(reviewQueue).filter(x=>x.status==="open").length;
+  btn.textContent=n?`⚑ Bearbeitungsliste (${n})`:"⚑ Bearbeitungsliste";
+}
+
 function loadProgress(){
   try {
     const v2=JSON.parse(localStorage.getItem(STORAGE_KEY));
@@ -262,12 +440,28 @@ function setstate(id,s){ progress[id]=normalizeState(s); saveAll(); }
 function chapters(){return [...new Set(bank.map(q=>q.chapter))].sort((a,b)=>a.localeCompare(b,"de",{numeric:true}))}
 function isReviewDue(s){return !!s.mastered && !!s.reviewDue && s.reviewDue<=Date.now()}
 function stageName(s){
-  if(s.mastered) return isReviewDue(s) ? "5/5 · Wiederholung fällig" : "5/5 · sicher";
+  if(s.mastered) return isReviewDue(s) ? "3/3 · Wiederholung fällig" : "3/3 · sicher";
   if(!s.attempts && !s.streak) return "neu";
   return `${s.streak}/5`;
 }
 function stagePips(n){
-  return `<span class="stagebar">${[1,2,3,4,5].map(i=>`<span class="stagepip ${i<=n?"on":""}"></span>`).join("")}</span>`;
+  return `<span class="stagebar">${Array.from({length:MAX_STREAK},(_,k)=>k+1).map(i=>`<span class="stagepip ${i<=n?"on":""}"></span>`).join("")}</span>`;
+}
+function optionLetterFromOriginalIndex(idx){ return String.fromCharCode(65+idx); }
+function chosenOptionHint(q, chosenOriginalIdx){
+  if(chosenOriginalIdx===undefined || chosenOriginalIdx===null) return "";
+  if(Array.isArray(q.option_explanations) && q.option_explanations[chosenOriginalIdx]){
+    return q.option_explanations[chosenOriginalIdx];
+  }
+  if(q.wrong_hints){
+    const key1 = String(chosenOriginalIdx);
+    const key2 = optionLetterFromOriginalIndex(chosenOriginalIdx);
+    return q.wrong_hints[key1] || q.wrong_hints[key2] || "";
+  }
+  return "";
+}
+function generalExplanation(q){
+  return q.correct_explanation || q.explanation || "";
 }
 function nextDelayFor(streak){ return COOLDOWNS[Math.max(0,Math.min(MAX_STREAK,streak))] || 0; }
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
@@ -299,6 +493,7 @@ function filteredBase(){
 }
 function learningPool(){
   return filteredBase().filter(q=>{
+    if(isHiddenForReview(q.id)) return false;
     const s=pstate(q.id);
     if(els.pool.value==="unmastered") return !s.mastered || isReviewDue(s);
     if(els.pool.value==="mastered") return !!s.mastered;
@@ -344,7 +539,15 @@ function renderLearn(){
   }
   const s=pstate(current.id);
   let inner=`<div class="topline"><span class="badge">${escapeHtml(current.chapter)}</span><span>${current.type==="mc"?"Multiple Choice":"Offene Frage"}</span></div>
-    <div class="question">${escapeHtml(current.q)}</div>`;
+    <div class="question">${escapeHtml(current.q)}</div>
+    <div class="question-meta">
+      <span class="meta-chip">📚 ${escapeHtml(current.chapter||"Ohne Kapitel")}</span>
+      <span class="meta-chip">📖 Buch: ${escapeHtml(current.book_chapter||"noch nicht zugeordnet")}</span>
+      <span class="meta-chip">🎓 VL: ${escapeHtml(current.lecture||"noch nicht zugeordnet")}${current.slides?` · Folie ${escapeHtml(current.slides)}`:""}</span>
+      ${questionNotice(current)?`<span class="meta-chip warning">⚠ Hinweis vorhanden</span>`:""}
+    </div>
+    ${questionNotice(current)?`<div class="question-notice"><b>⚠ Hinweis:</b> ${escapeHtml(questionNotice(current))}</div>`:""}
+    <div class="question-tools"><button id="flagQuestionBtn" class="flag-btn ${reviewQueue[current.id]?.status==="open"?"marked":""}">${reviewQueue[current.id]?.status==="open"?"⚑ Markiert":"⚑ Zur Bearbeitung"}</button></div>`;
 
   if(current.type==="mc"){
     inner+=`<div class="unsure-wrap"><button id="unsureBtn" class="unsure">🤔 Unsicher / geraten</button></div>
@@ -378,6 +581,7 @@ function renderLearn(){
     document.getElementById("openPartial").onclick=()=>grade("partial");
     document.getElementById("openRight").onclick=()=>grade("right");
   }
+  document.getElementById("flagQuestionBtn").onclick=()=>openFlagModal(current.id);
   document.getElementById("skipBtn").onclick=nextLearn;
 }
 function answerMC(displayIdx){
@@ -393,7 +597,7 @@ function answerMC(displayIdx){
     else b.classList.add("dim");
     b.disabled=true;
   });
-  grade(correct ? (uncertainAnswer?"unsure":"right") : "wrong", true);
+  grade(correct ? (uncertainAnswer?"unsure":"right") : "wrong", true, origIdx);
 }
 
 function applyResult(id,result){
@@ -438,32 +642,287 @@ function applyResult(id,result){
   saveAll();
   return pstate(id);
 }
-function grade(result, fromMC=false){
+function grade(result, fromMC=false, chosenOriginalIdx=null){
   const s=applyResult(current.id,result);
   answered=true;
 
   if(current.type==="mc"){
     const f=document.getElementById("feedback");
+    const hint = result==="wrong" ? chosenOptionHint(current, chosenOriginalIdx) : "";
+    const explanation = generalExplanation(current);
+
     if(result==="right"){
       f.className="feedback good";
-      f.innerHTML=`<h3>✓ Richtig · Lernstufe erhöht</h3><p>${escapeHtml(current.explanation||"")}</p>`;
+      f.innerHTML=`<h3>✓ Richtig · Lernstufe erhöht</h3>${explanation?`<p>${escapeHtml(explanation)}</p>`:""}`;
     } else if(result==="unsure"){
       f.className="feedback good";
-      f.innerHTML=`<h3>✓ Richtig, aber unsicher</h3><p>Gut markiert: Die Antwort zählt <b>nicht</b> als neuer sicherer Abruf. ${escapeHtml(current.explanation||"")}</p>`;
+      f.innerHTML=`<h3>✓ Richtig, aber unsicher</h3><p>Gut markiert: Die Antwort zählt <b>nicht</b> als neuer sicherer Abruf.</p>${explanation?`<p>${escapeHtml(explanation)}</p>`:""}`;
     } else {
       f.className="feedback bad";
-      f.innerHTML=`<h3>✕ Falsch · Serie zurück auf 0</h3><p>${escapeHtml(current.explanation||"")}</p>`;
+      f.innerHTML=`<h3>✕ Falsch · Serie zurück auf 0</h3>
+      <p><b>Richtig ist:</b> ${escapeHtml(current.options[current.answer])}</p>
+      ${hint?`<div class="hintbox"><b>Hinweis zu deiner Auswahl</b><div>${escapeHtml(hint)}</div></div>`:""}
+      ${explanation?`<p style="margin-top:10px">${escapeHtml(explanation)}</p>`:""}`;
     }
   }else{
     ["openRight","openWrong","openPartial"].forEach(id=>document.getElementById(id).disabled=true);
   }
 
   const next=document.getElementById("skipBtn");
-  next.textContent=s.mastered?"Nächste Frage · 5/5 sicher ✓":"Nächste Frage";
+  next.textContent=s.mastered?"Nächste Frage · 3/3 sicher ✓":"Nächste Frage";
   next.classList.add("primary");
   const sr=document.querySelector(".streak");
   sr.innerHTML=`Lernstufe: <b>${stageName(s)}</b>${stagePips(s.streak)}${s.mastered?'<div class="reviewnote">Nächste Kontrollwiederholung wird später automatisch fällig.</div>':""}`;
 }
+
+
+function generateLocalQuestionId(){
+  let id;
+  do{
+    id="user_"+Date.now()+"_"+Math.random().toString(36).slice(2,8);
+  }while(bank.some(q=>q.id===id));
+  return id;
+}
+function setNewQuestionType(type){
+  newQuestionType=type;
+  document.getElementById("newTypeMC").classList.toggle("active",type==="mc");
+  document.getElementById("newTypeRF").classList.toggle("active",type==="rf");
+  document.getElementById("newQOptionsMC").style.display=type==="mc"?"block":"none";
+  document.getElementById("newQOptionsRF").style.display=type==="rf"?"block":"none";
+}
+function openNewQuestionModal(){
+  document.getElementById("newQText").value="";
+  ["newOpt0","newOpt1","newOpt2","newOpt3","newQExplanation","newQBook","newQLecture","newQSlides","newQSource","newQNotice"].forEach(id=>{
+    const el=document.getElementById(id); if(el)el.value="";
+  });
+  const currentChapter = els.chapter && els.chapter.value!=="all" ? els.chapter.value : "";
+  document.getElementById("newQChapter").value=currentChapter;
+  const firstMC=document.querySelector('input[name="newCorrect"][value="0"]');
+  if(firstMC) firstMC.checked=true;
+  const firstRF=document.querySelector('input[name="newRF"][value="0"]');
+  if(firstRF) firstRF.checked=true;
+  setNewQuestionType("mc");
+  document.getElementById("newQuestionModal").classList.add("show");
+  setTimeout(()=>document.getElementById("newQText").focus(),50);
+}
+function closeNewQuestionModal(){
+  document.getElementById("newQuestionModal").classList.remove("show");
+}
+function saveNewQuestionFromModal(){
+  const qtext=document.getElementById("newQText").value.trim();
+  const chapter=document.getElementById("newQChapter").value.trim() || "Eigene Fragen";
+  if(!qtext){alert("Bitte einen Fragetext eingeben.");return}
+
+  let options=[], answer=0;
+  if(newQuestionType==="mc"){
+    options=[0,1,2,3].map(i=>document.getElementById("newOpt"+i).value.trim());
+    if(options.some(x=>!x)){alert("Bitte alle vier Antwortoptionen ausfüllen.");return}
+    const selected=document.querySelector('input[name="newCorrect"]:checked');
+    answer=selected?Number(selected.value):0;
+  }else{
+    options=["Richtig","Falsch"];
+    const selected=document.querySelector('input[name="newRF"]:checked');
+    answer=selected?Number(selected.value):0;
+  }
+
+  const q={
+    id:generateLocalQuestionId(),
+    chapter,
+    type:"mc",
+    q:qtext,
+    options,
+    answer,
+    explanation:document.getElementById("newQExplanation").value.trim(),
+    correct_explanation:document.getElementById("newQExplanation").value.trim(),
+    book_chapter:document.getElementById("newQBook").value.trim(),
+    lecture:document.getElementById("newQLecture").value.trim(),
+    slides:document.getElementById("newQSlides").value.trim(),
+    source_note:document.getElementById("newQSource").value.trim(),
+    notice:document.getElementById("newQNotice").value.trim(),
+    user_created:true,
+    created_at:Date.now()
+  };
+
+  bank.push(q);
+  saveBank();
+  initFilters();
+  updateStats();
+  closeNewQuestionModal();
+  alert("Neue Frage gespeichert. Sie ist ab jetzt im Trainer verfügbar.");
+}
+
+function openFlagModal(id){
+  const q=bankQuestion(id); if(!q)return;
+  flagTargetId=id;
+  const existing=reviewQueue[id]||{};
+  document.getElementById("flagNote").value=existing.note||"";
+  document.getElementById("flagHide").checked=!!existing.hideUntilEdited;
+  document.getElementById("flagModal").classList.add("show");
+  setTimeout(()=>document.getElementById("flagNote").focus(),50);
+}
+function closeFlagModal(){
+  document.getElementById("flagModal").classList.remove("show");
+  flagTargetId=null;
+}
+function saveFlagFromModal(){
+  const id=flagTargetId; if(!id)return;
+  const q=bankQuestion(id); if(!q)return;
+  const old=reviewQueue[id]||{};
+  reviewQueue[id]={
+    note:document.getElementById("flagNote").value.trim(),
+    hideUntilEdited:document.getElementById("flagHide").checked,
+    markedAt:old.markedAt||Date.now(),
+    status:"open",
+    original:old.original||JSON.parse(JSON.stringify(q))
+  };
+  saveReviewQueue();
+  closeFlagModal();
+  if(current && current.id===id){
+    const b=document.getElementById("flagQuestionBtn");
+    if(b){b.classList.add("marked");b.textContent="⚑ Markiert"}
+    if(reviewQueue[id].hideUntilEdited) setTimeout(nextLearn,150);
+  }
+}
+function renderReviewList(){
+  const root=document.getElementById("reviewListView");
+  document.getElementById("reviewEditorView").style.display="none";
+  root.style.display="block";
+  const entries=Object.entries(reviewQueue)
+    .sort((a,b)=>(a[1].status==="done")-(b[1].status==="done") || (b[1].markedAt||0)-(a[1].markedAt||0));
+
+  if(!entries.length){
+    root.innerHTML='<div class="empty"><h3>Keine markierten Fragen</h3><p>Beim Lernen kannst du jede auffällige Frage mit „⚑ Zur Bearbeitung“ markieren.</p></div>';
+    return;
+  }
+
+  root.innerHTML=`<div class="small" style="margin-bottom:12px">Offene und bereits bearbeitete Fragen bleiben hier gesammelt. Änderungen werden nur auf diesem Gerät gespeichert.</div>
+  <div class="review-list">${entries.map(([id,r])=>{
+    const q=bankQuestion(id) || r.original;
+    if(!q)return "";
+    return `<div class="review-card">
+      <div style="display:flex;justify-content:space-between;gap:10px">
+        <h3>${escapeHtml(q.q)}</h3>
+        <span class="status-pill ${r.status==="done"?"done":""}">${r.status==="done"?"bearbeitet":"offen"}</span>
+      </div>
+      <div class="meta">📚 ${escapeHtml(q.chapter||"")} · 📖 Buch: ${escapeHtml(q.book_chapter||"—")} · 🎓 VL: ${escapeHtml(q.lecture||"—")}${q.slides?` · Folie ${escapeHtml(q.slides)}`:""}${r.markedAt?` · markiert ${formatMarkedAt(r.markedAt)}`:""}</div>
+      ${questionNotice(q)?`<div class="question-notice" style="margin:8px 0"><b>⚠ Hinweis:</b> ${escapeHtml(questionNotice(q))}</div>`:""}
+      ${r.note?`<div class="note"><b>Deine Notiz:</b> ${escapeHtml(r.note)}</div>`:""}
+      <div class="actions">
+        <button data-edit="${escapeAttr(id)}" class="primary">Bearbeiten</button>
+        ${r.status==="open"?`<button data-done="${escapeAttr(id)}">Als erledigt markieren</button>`:`<button data-reopen="${escapeAttr(id)}">Wieder öffnen</button>`}
+        <button data-remove="${escapeAttr(id)}" class="danger">Aus Liste entfernen</button>
+      </div>
+    </div>`;
+  }).join("")}</div>`;
+
+  root.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>openReviewEditor(b.dataset.edit));
+  root.querySelectorAll("[data-done]").forEach(b=>b.onclick=()=>{reviewQueue[b.dataset.done].status="done";reviewQueue[b.dataset.done].hideUntilEdited=false;saveReviewQueue();renderReviewList()});
+  root.querySelectorAll("[data-reopen]").forEach(b=>b.onclick=()=>{reviewQueue[b.dataset.reopen].status="open";saveReviewQueue();renderReviewList()});
+  root.querySelectorAll("[data-remove]").forEach(b=>b.onclick=()=>{if(confirm("Markierung wirklich aus der Bearbeitungsliste entfernen?")){delete reviewQueue[b.dataset.remove];saveReviewQueue();renderReviewList()}});
+}
+function openReviewEditor(id){
+  const q=bankQuestion(id); if(!q)return;
+  editingReviewId=id;
+  const r=reviewQueue[id]||{};
+  const root=document.getElementById("reviewEditorView");
+  document.getElementById("reviewListView").style.display="none";
+  root.style.display="block";
+
+  const opts=Array.isArray(q.options)?q.options:[];
+  root.innerHTML=`<button id="backReviewList">← Zurück zur Liste</button>
+  <h2 style="margin-top:14px">Frage bearbeiten</h2>
+  <div class="small">Änderungen wirken sofort auf diesem Gerät. Mit „Original wiederherstellen“ kannst du jederzeit zurück.</div>
+
+  <div class="editor-section">
+    <label>Deine Bearbeitungsnotiz</label>
+    <textarea id="editReviewNote" style="min-height:80px">${escapeHtml(r.note||"")}</textarea>
+  </div>
+
+  <div class="editor-section">
+    <label>Fragetext</label>
+    <textarea id="editQuestionText" style="min-height:110px">${escapeHtml(q.q||"")}</textarea>
+  </div>
+
+  <div class="editor-section">
+    <label>Antwortoptionen · richtige Antwort auswählen</label>
+    <div class="editor-options">
+    ${opts.map((o,i)=>`<div class="editor-option">
+      <label style="margin:0;display:flex;align-items:center;gap:7px;color:var(--ink)"><input type="radio" name="correctOpt" value="${i}" ${q.answer===i?"checked":""}> ${String.fromCharCode(65+i)}</label>
+      <input type="text" data-opt="${i}" value="${escapeAttr(o)}">
+    </div>`).join("")}
+    </div>
+  </div>
+
+  <div class="editor-section">
+    <label>Erklärung / Hinweis zur Lösung</label>
+    <textarea id="editExplanation" style="min-height:90px">${escapeHtml(q.correct_explanation||q.explanation||"")}</textarea>
+  </div>
+
+  <div class="editor-section">
+    <h3>Orientierung</h3>
+    <div class="editor-grid">
+      <div class="full"><label>Trainer-Kapitel</label><input id="editChapter" type="text" value="${escapeAttr(q.chapter||"")}"></div>
+      <div><label>Buchkapitel</label><input id="editBookChapter" type="text" value="${escapeAttr(q.book_chapter||"")}" placeholder="z. B. Kapitel 5"></div>
+      <div><label>Vorlesung</label><input id="editLecture" type="text" value="${escapeAttr(q.lecture||"")}" placeholder="z. B. VL 7 – Neurophysiologie"></div>
+      <div><label>Folie(n)</label><input id="editSlides" type="text" value="${escapeAttr(q.slides||"")}" placeholder="z. B. 23–28"></div>
+      <div><label>Quellen-Notiz</label><input id="editSourceNote" type="text" value="${escapeAttr(q.source_note||"")}" placeholder="z. B. Buch S. 143"></div>
+      <div class="full"><label>⚠ Hinweis zur Frage</label><textarea id="editQuestionNotice" style="min-height:80px" placeholder="z. B. Konzept im Buch vorhanden, genaue Formulierung/Zuordnung nicht wörtlich belegt.">${escapeHtml(q.notice||q.warning||q.hint_note||q.question_note||q.source_warning||"")}</textarea></div>
+    </div>
+  </div>
+
+  <div class="editor-section">
+    <label style="display:flex;gap:8px;align-items:center;color:var(--ink);font-size:13px"><input id="editHide" type="checkbox" style="width:auto" ${r.hideUntilEdited?"checked":""}> Beim Lernen ausblenden, solange die Frage offen markiert ist</label>
+  </div>
+
+  <div class="row" style="margin-top:18px">
+    <button id="restoreOriginal" class="danger">Original wiederherstellen</button>
+    <button id="saveQuestionEdit" class="primary">Änderungen speichern</button>
+  </div>`;
+
+  document.getElementById("backReviewList").onclick=renderReviewList;
+  document.getElementById("saveQuestionEdit").onclick=saveQuestionEdit;
+  document.getElementById("restoreOriginal").onclick=restoreQuestionOriginal;
+}
+function saveQuestionEdit(){
+  const id=editingReviewId, q=bankQuestion(id); if(!q)return;
+  const selected=document.querySelector('input[name="correctOpt"]:checked');
+  q.q=document.getElementById("editQuestionText").value.trim();
+  q.options=[...document.querySelectorAll("[data-opt]")].map(x=>x.value.trim());
+  if(selected) q.answer=Number(selected.value);
+  q.explanation=document.getElementById("editExplanation").value.trim();
+  q.correct_explanation=q.explanation;
+  q.chapter=document.getElementById("editChapter").value.trim();
+  q.book_chapter=document.getElementById("editBookChapter").value.trim();
+  q.lecture=document.getElementById("editLecture").value.trim();
+  q.slides=document.getElementById("editSlides").value.trim();
+  q.source_note=document.getElementById("editSourceNote").value.trim();
+  q.notice=document.getElementById("editQuestionNotice").value.trim();
+
+  if(!reviewQueue[id]) reviewQueue[id]={markedAt:Date.now(),original:JSON.parse(JSON.stringify(q))};
+  reviewQueue[id].note=document.getElementById("editReviewNote").value.trim();
+  reviewQueue[id].hideUntilEdited=false;
+  reviewQueue[id].status="done";
+  reviewQueue[id].editedAt=Date.now();
+
+  saveBank();
+  saveReviewQueue();
+  initFilters();
+  updateStats();
+  alert("Änderungen gespeichert. Die korrigierte Frage wird ab jetzt verwendet.");
+  renderReviewList();
+}
+function restoreQuestionOriginal(){
+  const id=editingReviewId, r=reviewQueue[id];
+  if(!r || !r.original){alert("Für diese Frage ist kein Original gespeichert.");return}
+  if(!confirm("Wirklich alle Änderungen an dieser Frage auf den ursprünglichen Stand zurücksetzen?"))return;
+  const idx=bank.findIndex(q=>q.id===id);
+  if(idx>=0) bank[idx]=JSON.parse(JSON.stringify(r.original));
+  r.status="open";
+  r.hideUntilEdited=false;
+  saveBank();saveReviewQueue();initFilters();updateStats();
+  openReviewEditor(id);
+}
+
 function updateStats(){
   const base=filteredBase();
   const total=base.length;
@@ -471,7 +930,7 @@ function updateStats(){
   const wrong=base.reduce((sum,q)=>sum+(pstate(q.id).wrong||0),0);
   const pct=total?Math.round(mastered/total*100):0;
   const readiness=total?Math.round(base.reduce((sum,q)=>sum+pstate(q.id).streak/MAX_STREAK,0)/total*100):0;
-  const counts=[0,0,0,0,0,0];
+  const counts=Array(MAX_STREAK+1).fill(0);
   base.forEach(q=>counts[pstate(q.id).streak]++);
 
   els.mastered.textContent=mastered;
@@ -480,7 +939,7 @@ function updateStats(){
   els.percent.textContent=pct+"%";
   els.readiness.textContent=readiness+"%";
   els.progressBar.style.width=readiness+"%";
-  els.stageSummary.innerHTML=`Neu/0: <b>${counts[0]}</b> · 1/5: <b>${counts[1]}</b> · 2/5: <b>${counts[2]}</b> · 3/5: <b>${counts[3]}</b> · 4/5: <b>${counts[4]}</b> · 5/5: <b>${counts[5]}</b>`;
+  els.stageSummary.innerHTML=`Neu/0: <b>${counts[0]}</b> · 1/3: <b>${counts[1]}</b> · 2/3: <b>${counts[2]}</b> · 3/3: <b>${counts[3]}</b>`;
 
   els.chapterStats.innerHTML=chapters().map(c=>{
     const qs=bank.filter(q=>q.chapter===c && (els.type.value==="all"||q.type===els.type.value));
@@ -533,7 +992,7 @@ function finishExam(){
   });
   const pct=Math.round(correct/exam.qs.length*100);
   els.content.innerHTML=`<div class="exam-result"><span class="badge">Auswertung</span><div class="resultbig">${correct}/${exam.qs.length}</div><h2>${pct}% richtig</h2>
-  <p>Prüfungsantworten zählen als echte Abrufe für die 5-Stufen-Serie. Ein Fehler setzt die betreffende Frage wieder auf 0/5.</p>
+  <p>Prüfungsantworten zählen als echte Abrufe für die 5-Stufen-Serie. Ein Fehler setzt die betreffende Frage wieder auf 0/3.</p>
   ${wrongItems.length?`<h3>Fehlerfragen (${wrongItems.length})</h3><div class="wronglist">${wrongItems.map(x=>`<div class="wrongitem"><b>${escapeHtml(x.q.q)}</b><div>Richtig: ${escapeHtml(x.q.options[x.q.answer])}</div><div class="small">${escapeHtml(x.q.explanation||"")}</div></div>`).join("")}</div>`:`<div class="feedback good" style="display:block"><h3>Fehlerfrei 🎉</h3><p>Alle Fragen richtig beantwortet.</p></div>`}
   <button id="againExam" class="primary" style="margin-top:18px">Neue Prüfung</button></div>`;
   document.getElementById("againExam").onclick=startExam;
@@ -593,6 +1052,33 @@ document.getElementById("progressImport").onchange = async e => {
   }catch(err){alert("Import fehlgeschlagen: "+err.message)}
 };
 
+
+
+// New question UI
+const newQuestionModal=document.getElementById("newQuestionModal");
+document.getElementById("newQuestionBtn").onclick=openNewQuestionModal;
+document.getElementById("closeNewQuestionModal").onclick=closeNewQuestionModal;
+document.getElementById("cancelNewQuestion").onclick=closeNewQuestionModal;
+document.getElementById("newTypeMC").onclick=()=>setNewQuestionType("mc");
+document.getElementById("newTypeRF").onclick=()=>setNewQuestionType("rf");
+document.getElementById("saveNewQuestion").onclick=saveNewQuestionFromModal;
+newQuestionModal.onclick=e=>{if(e.target===newQuestionModal)closeNewQuestionModal()};
+
+// Review / edit UI
+const flagModal=document.getElementById("flagModal");
+const reviewModal=document.getElementById("reviewModal");
+document.getElementById("closeFlagModal").onclick=closeFlagModal;
+document.getElementById("cancelFlag").onclick=closeFlagModal;
+document.getElementById("saveFlag").onclick=saveFlagFromModal;
+flagModal.onclick=e=>{if(e.target===flagModal)closeFlagModal()};
+
+document.getElementById("reviewListBtn").onclick=()=>{
+  reviewModal.classList.add("show");
+  renderReviewList();
+};
+document.getElementById("closeReviewModal").onclick=()=>reviewModal.classList.remove("show");
+reviewModal.onclick=e=>{if(e.target===reviewModal)reviewModal.classList.remove("show")};
+
 // PWA install
 let deferredInstallPrompt=null;
 window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredInstallPrompt=e});
@@ -638,6 +1124,7 @@ window.matchMedia("(display-mode: standalone)").addEventListener?.("change", upd
 
 initFilters();
 updateStats();
+updateReviewBadge();
 nextLearn();
 </script>
 
